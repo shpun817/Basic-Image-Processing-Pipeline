@@ -129,6 +129,32 @@ im_rgb = cat(3, r_result, g_result, b_result);
 im_gray = rgb2gray(im_rgb);
 gray_max = max(im_gray(:));
 percentage = 4.5;
-im_rgb_bright = im_rgb * percentage * gray_max;
+im_rgb = im_rgb * percentage * gray_max;
 
-figure; imshow(im_rgb_bright);
+% figure; imshow(im_rgb);
+% The image is much brighter
+
+%% Gamma correction
+
+threshold = .0031308;
+
+ind = im_rgb<=threshold;
+
+im_rgb(ind) = 12.92*im_rgb(ind);
+im_rgb(~ind) = (1+0.055)*(im_rgb(~ind).^(1/2.4))-0.055;
+
+% figure; imshow(im_rgb);
+
+%% Compression
+
+imwrite(im_rgb,'outputUncompressed.png');
+imwrite(im_rgb,'output95.jpg','jpg','quality',95);
+
+% The compression ratio is about 5.3763.
+
+imwrite(im_rgb,'output25.jpg','jpg','quality',25);
+disp('Compression Done');
+
+% I think 25 is the lowest quality such that it is nearly
+% indistinguishable.
+% The corresponding compression ratio is about 37.9349.
